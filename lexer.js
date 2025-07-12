@@ -18,7 +18,7 @@ function tokenize(input) {
     if (/\d/.test(char)) {
       let num = '';
       while (/\d/.test(input[i])) {
-        num += input[i];
+        num += input[i++];
       }
       tokens.push({ type: 'NUMBER', value: num });
       continue;
@@ -57,11 +57,15 @@ function tokenize(input) {
       case '-':
       case '*':
       case '/':
+      case '>':
+      case '<':
         tokens.push({ type: "OPERATOR", value: char });
         break;
       case ';':
       case '(':
       case ')':
+      case '{':
+      case '}':
         tokens.push({ type: "DELIMITER", value: char });
         break;
       default:
