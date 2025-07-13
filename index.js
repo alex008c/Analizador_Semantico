@@ -2,6 +2,13 @@
 const { tokenize } = require('./lexer');
 const { parseTokens } = require('./parser');
 const { SemanticAnalyzer } = require('./semantic');
+const readline = require('readline');
+
+// Crear interfaz para entrada del usuario
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
 
 // Función principal del analizador semántico
 function analyzeCode(sourceCode) {
@@ -66,8 +73,56 @@ let resultado = numero * 2;
 
 // Ejecutar análisis si el archivo se ejecuta directamente
 if (require.main === module) {
-  console.log('Ejecutando análisis con código de ejemplo...\n');
-  analyzeCode(ejemploCodigo);
+  console.log('ANALIZADOR SEMÁNTICO INTERACTIVO');
+  console.log('====================================');
+  console.log('Instrucciones:');
+  console.log('- Escribe tu código línea por línea');
+  console.log('- Escribe "ANALIZAR" para procesar el código');
+  console.log('- Escribe "EJEMPLO" para usar código de ejemplo');
+  console.log('- Escribe "SALIR" para terminar\n');
+
+  let userCode = '';
+
+  function askForInput() {
+    rl.question('>>> ', (input) => {
+      const command = input.trim().toUpperCase();
+
+      if (command === 'SALIR') {
+        console.log('¡Hasta luego!');
+        rl.close();
+        return;
+      }
+
+      if (command === 'ANALIZAR') {
+        if (userCode.trim() === '') {
+          console.log('No has ingresado ningún código. Escribe algo primero.\n');
+        } else {
+          console.log('\n' + '='.repeat(50));
+          console.log('ANALIZANDO TU CÓDIGO...');
+          console.log('='.repeat(50));
+          analyzeCode(userCode);
+          userCode = ''; // Limpiar para próximo análisis
+          console.log('\n' + '='.repeat(50));
+          console.log('¿Quieres analizar más código? Escribe nuevas líneas o "SALIR"');
+        }
+        askForInput();
+        return;
+      }
+
+      if (command === 'EJEMPLO') {
+        userCode = ejemploCodigo;
+        console.log('Código de ejemplo cargado. Escribe "ANALIZAR" para procesarlo.\n');
+        askForInput();
+        return;
+      }
+
+      // Agregar línea al código del usuario
+      userCode += input + '\n';
+      askForInput();
+    });
+  }
+
+  askForInput();
 }
 
 // Exportar función para uso como módulo
